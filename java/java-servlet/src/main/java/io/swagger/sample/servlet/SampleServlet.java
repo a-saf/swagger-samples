@@ -1,16 +1,13 @@
 package io.swagger.sample.servlet;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Contact;
-import io.swagger.annotations.Info;
-import io.swagger.annotations.License;
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.annotations.Tag;
+import io.swagger.oas.annotations.*;
+import io.swagger.oas.annotations.Operation;
+import io.swagger.oas.annotations.responses.ApiResponse;
+import io.swagger.oas.annotations.info.Contact;
+import io.swagger.oas.annotations.info.Info;
+import io.swagger.oas.annotations.info.License;
+import io.swagger.oas.annotations.media.Content;
+import io.swagger.oas.annotations.media.Schema;
 import io.swagger.sample.model.SampleData;
 import io.swagger.util.Json;
 
@@ -23,38 +20,96 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
 
-@SwaggerDefinition(
-        info = @Info(
-                description = "This is a sample server",
-                version = "1.0.0",
-                title = "Swagger Sample Servlet",
-                termsOfService = "http://swagger.io/terms/",
-                contact = @Contact(name = "Sponge-Bob", email = "apiteam@swagger.io", url = "http://swagger.io"),
-                license = @License(name = "Apache 2.0", url = "http://www.apache.org/licenses/LICENSE-2.0.html")
-        ),
-        consumes = {"application/json", "application/xml"},
-        produces = {"application/json", "application/xml"},
-        schemes = {SwaggerDefinition.Scheme.HTTP, SwaggerDefinition.Scheme.HTTPS},
-        tags = {@Tag(name = "users", description = "Operations about user")}
-)
-@Api(value = "/sample/users", description = "gets some data from a servlet")
+@Info(
+		description = "This is a sample server",
+        version = "1.0.0",
+        title = "Swagger Sample Servlet",
+        termsOfService = "http://swagger.io/terms/",
+        contact = @Contact(
+        		name = "Sponge-Bob", 
+        		email = "apiteam@swagger.io", 
+        		url = "http://swagger.io"),
+        license = @License(
+        		name = "Apache 2.0", 
+        		url = "http://www.apache.org/licenses/LICENSE-2.0.html")
+        ) 
+@Consumes({"application/json", "application/xml"})
+@Produces({"application/json", "application/xml"})
+//        schemes = {SwaggerDefinition.Scheme.HTTP, SwaggerDefinition.Scheme.HTTPS},
+//        tags = {@Tag(name = "users", description = "Operations about user")}
+//)
+@Schema(
+		name = "/sample/users", 
+		description = "gets some data from a servlet"
+		)
 public class SampleServlet extends HttpServlet {
 
-    @ApiOperation(httpMethod = "GET", value = "Resource to get a user", response = SampleData.class, nickname = "getUser")
-    @ApiResponses({@ApiResponse(code = 400, message = "Invalid input", response = io.swagger.sample.model.ApiResponse
-            .class)})
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "User ID", required = true, dataType = "integer", paramType =
-                    "query"),
-            @ApiImplicitParam(name = "name", value = "User's name", required = true, dataType = "string", paramType =
-                    "query"),
-            @ApiImplicitParam(name = "email", value = "User's email", required = true, dataType = "string", paramType
-                    = "query"),
-            @ApiImplicitParam(name = "age", value = "User's age", required = true, dataType = "integer", paramType =
-                    "query"),
-            @ApiImplicitParam(name = "dateOfBirth", value = "User's date of birth, in dd-MM-yyyy format", required =
-                    true, dataType = "java.util.Date", paramType = "query")})
+    @Operation(
+  		  method = "GET",
+  		  summary = "Get user",
+  		  description ="Resource to get a user", 
+  		  responses = {
+  				  @ApiResponse(
+  						  responseCode = "400",
+  						  description = "Invalid input",
+  						  content = @Content(
+  								  mediaType = "none",
+  								  schema = @Schema(implementation = io.swagger.sample.model.ApiResponse.class)
+  								  )
+  						  )
+  		  		},
+  		  parameters = {
+  			         	@Parameter(
+  			         			name = "id", 
+  			            		description = "User ID", 
+  			            		in = "query",
+  			            		required = true, 
+  			            		content = @Content(
+  			            				schema = @Schema(format ="integer")
+  			            				)
+  			         			),
+  			         	@Parameter(
+  			         			name = "name", 
+  			            		description = "User's name", 
+  			            		in = "query",
+  			            		required = true, 
+  			            		content = @Content(
+  			            				schema = @Schema(format ="string")
+  			            				)
+  			         			),
+  			         	@Parameter(
+  			         			name = "email", 
+  			            		description = "User's email", 
+  			            		in = "query",
+  			            		required = true, 
+  			            		content = @Content(
+  			            				schema = @Schema(format ="string")
+  			            				)
+  			         			),
+  			         	@Parameter(
+  			         			name = "age", 
+  			            		description = "User's age", 
+  			            		in = "query",
+  			            		required = true, 
+  			            		content = @Content(
+  			            				schema = @Schema(format ="integer")
+  			            				)
+  			         			),
+  			         	@Parameter(
+  			         			name = "dateOfBirth", 
+  			            		description = "User's date of birth, in dd-MM-yyyy format", 
+  			            		in = "query",
+  			            		required = true, 
+  			            		content = @Content(
+  			            				schema = @Schema(format ="date") //java.util.Date
+  			            				)
+  			         			)
+  		  }
+    )
+   
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String result;
         try {
